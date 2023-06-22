@@ -206,11 +206,11 @@ class HTML_Requester (object) :
 
         enc = PW_Encode (modulus = self.modulus, exponent = self.exponent)
         d = dict \
-            ( password      = enc.encrypt (self.args.password)
-            , userName      = self.args.username
-            , selectedRealm = self.args.realm
+            ( selectedRealm = self.args.realm
             , loginType     = self.args.login_type
-            , vpid_prefix   = self.args.vpid_prefix
+            , userName      = self.args.username
+            , pin           = self.args.password
+            , password      = enc.encrypt (self.args.password)
             , HeightData    = self.args.height_data
             )
         self.open (data = urlencode (d))
@@ -220,8 +220,8 @@ class HTML_Requester (object) :
         if self.args.multi_challenge :
             while 'MultiChallenge' in self.purl :
                 d = self.parse_pw_response ()
-                otp = getpass ('One-time Password: ')
-                d ['password'] = enc.encrypt (otp)
+                d ['pin'] = ''
+                d ['password'] = enc.encrypt (self.args.multi_challenge)
                 self.debug ("nextfile: %s" % self.nextfile)
                 self.debug ("purl: %s" % self.purl)
                 self.open (data = urlencode (d))
@@ -268,6 +268,7 @@ class HTML_Requester (object) :
         if data :
             data = data.encode ('ascii')
         rq = Request (url, data)
+        rq.add_header('User-Agent', 'Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/109.0')
         self.f = f = self.opener.open (rq, timeout = 10)
         if do_soup :
             # Sometimes we get incomplete read. So we read everything
@@ -329,7 +330,7 @@ class HTML_Requester (object) :
                 continue
             if 'name' not in input.attrs :
                 continue
-            if input ['name'] in ('password', 'btnCancel') :
+            if input ['name'] in ('password', 'btnCancel', 'SendMethod', 'phoneNumbersSelection') :
                 continue
             d [input ['name']] = input.attrs.get ('value', '')
         return d
