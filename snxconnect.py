@@ -298,6 +298,7 @@ class HTML_Requester (object) :
         for line in script.text.split ('\n') :
             if '/* Extender.user_name' in line :
                 break
+        self.debug ('extender_line: %s' % line)
         stmts = line.split (';')
         vars  = {}
         for stmt in stmts :
@@ -311,6 +312,7 @@ class HTML_Requester (object) :
                 continue
             rhs = rhs.strip ().strip ('"')
             vars [lhs] = rhs.encode ('utf-8')
+        self.debug ('extender_vars: %s' % repr (vars))
         self.extender_vars = vars
     # end def parse_extender
 
