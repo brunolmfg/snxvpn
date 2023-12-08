@@ -144,7 +144,8 @@ class HTML_Requester (object) :
         """
         magic  = b'\x13\x11\x00\x00'
         length = 0x3d0
-        gw_ip  = socket.gethostbyname(self.extender_vars ['host_name'])
+        gw_host = self.args.host.encode('utf-8') if self.args.use_host_as_gw else self.extender_vars ['host_name']
+        gw_ip  = socket.gethostbyname(gw_host)
         gw_int = unpack("!I", socket.inet_aton(gw_ip))[0]
         fmt    = b'=4sLL64sL6s256s256s128s256sH'
         info   = pack \
@@ -152,7 +153,7 @@ class HTML_Requester (object) :
             , magic
             , length
             , gw_int
-            , self.extender_vars ['host_name']
+            , gw_host
             , int (self.extender_vars ['port'])
             , b''
             , self.extender_vars ['server_cn']
@@ -533,6 +534,12 @@ def main () :
         , help    = 'Skip certificate verification'
         , action='store_true'
         , default = cfg.get ('skip_cert', False)
+        )
+    cmd.add_argument \
+        ( '--use-host-as-gw'
+        , help    = 'Use host as connection gateway'
+        , action='store_true'
+        , default = cfg.get ('use_host_as_gw', False)
         )
 
     args = cmd.parse_args ()
