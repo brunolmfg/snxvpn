@@ -227,12 +227,17 @@ class HTML_Requester (object) :
                 self.debug ("purl: %s" % self.purl)
                 self.open (data = urlencode (d))
                 self.debug ("info: %s" % self.info)
+                if self.check_error () :
+                    return
 
         if self.purl.endswith ('Login/ActivateLogin') :
             if self.args.save_cookies :
                 self.jar.save (self.args.cookiefile, ignore_discard = True)
             self.debug ("purl: %s" % self.purl)
             self.open('sslvpn/Login/ActivateLogin?ActivateLogin=activate&LangSelect=en_US&submit=Continue&HeightData=')
+
+        if self.check_error () :
+            return
 
         if self.purl.endswith ('Portal/Main') :
             if self.args.save_cookies :
@@ -245,6 +250,7 @@ class HTML_Requester (object) :
             self.generate_snx_info ()
             return True
         else :
+            self.check_error ()
             print ("Unexpected response, try again.")
             self.debug ("purl: %s" % self.purl)
             return
@@ -360,6 +366,14 @@ class HTML_Requester (object) :
         self.modulus  = rsatype (vars ['modulus'],  16)
         self.exponent = rsatype (vars ['exponent'], 16)
     # end def parse_rsa_params
+
+    def check_error (self) :
+        errorMessage = self.soup.select_one(".errorMessage")
+        if errorMessage :
+            print ("Error: %s" % errorMessage.string)
+            return True
+        return False
+    # end def check_error
 
 # end class HTML_Requester
 
