@@ -274,8 +274,7 @@ class HTML_Requester (object) :
         url = '/'.join (('%s:/' % self.args.protocol, self.args.host, filepart))
         if data :
             data = data.encode ('ascii')
-        rq = Request (url, data)
-        rq.add_header('User-Agent', 'Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/109.0')
+        rq = Request (url, data, headers={'User-Agent': self.args.useragent})
         self.f = f = self.opener.open (rq, timeout = 10)
         if do_soup :
             # Sometimes we get incomplete read. So we read everything
@@ -533,6 +532,11 @@ def main () :
         ( '-U', '--username'
         , help    = 'Login username, default="%(default)s"'
         , default = cfg.get ('username', '')
+        )
+    cmd.add_argument \
+        ( '-u', '--useragent'
+        , help    = 'User-Agent to be passed to Checkpoint Portal, default="%(default)s"'
+        , default = cfg.get ('useragent', 'Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/109.0')
         )
     cmd.add_argument \
         ( '-V', '--vpid-prefix'
