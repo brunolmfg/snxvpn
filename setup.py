@@ -22,7 +22,7 @@
 
 from snxvpnversion import VERSION
 
-from distutils.core import setup, Extension
+from setuptools import setup
 license = 'BSD License'
 
 description = []
