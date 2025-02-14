@@ -205,6 +205,12 @@ class HTML_Requester (object) :
                 break
         self.debug (self.nextfile)
 
+        # Prompt username and password if absent
+        if not self.args.username :
+            self.args.username = input ('Username: ')
+        if not self.args.password :
+            self.args.password = getpass ('Password: ')
+
         enc = PW_Encode (modulus = self.modulus, exponent = self.exponent)
         d = dict \
             ( selectedRealm = self.args.realm
@@ -531,7 +537,7 @@ def main () :
         print ("snxconnect version %s by Ralf Schlatterbeck" % VERSION)
         sys.exit (0)
 
-    # If absent, retrive password from netrc or prompt it
+    # If absent, retrive username or password from netrc
     if not args.username or not args.password :
         n = a = None
         try :
@@ -546,8 +552,6 @@ def main () :
                 args.username = un
             if not args.password :
                 args.password = pw
-        if not args.password :
-            args.password = getpass ('Password: ')
 
     # Proceed with login emulation on portal
     rq = HTML_Requester (args)
