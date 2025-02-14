@@ -2,4 +2,7 @@
 
 from snxconnect import main
 
-main ()
+try :
+    main ()
+except KeyboardInterrupt :
+    print ('\nBye!')
