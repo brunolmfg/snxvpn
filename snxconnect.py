@@ -457,7 +457,8 @@ def main () :
         )
     cmd.add_argument \
         ( '-MC', '--multi-challenge'
-        , help    = 'MultiChallenge, default="%(default)s"'
+        , help    = 'MultiChallenge flag enablement or actual code, default="%(default)s"'
+        , nargs   = '?', const = True
         , default = cfg.get ('multi_challenge', False)
         )
     cmd.add_argument \
@@ -525,6 +526,8 @@ def main () :
     if args.version :
         print ("snxconnect version %s by Ralf Schlatterbeck" % VERSION)
         sys.exit (0)
+
+    # If absent, retrive password from netrc or prompt it
     if not args.username or not args.password :
         n = a = None
         try :
@@ -541,6 +544,12 @@ def main () :
                 args.password = pw
         if not args.password :
             args.password = getpass ('Password: ')
+
+    # Check if MultiChallenge code needs to be prompted
+    if args.multi_challenge == True :
+        args.multi_challenge = input ('MultiChallenge code: ')
+
+    # Proceed with login emulation on portal
     rq = HTML_Requester (args)
     result = rq.login ()
     if result :
