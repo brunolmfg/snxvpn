@@ -39,9 +39,11 @@ from snxvpnversion     import VERSION
 """
 
 if sys.version_info >= (3,) :
+    string_type = str
     def b_ord (x) :
         return x
 else :
+    string_type = basestring
     def b_ord (x) :
         return ord (x)
 
@@ -217,6 +219,8 @@ class HTML_Requester (object) :
         self.debug (self.info)
 
         if self.args.multi_challenge :
+            if not isinstance(self.args.multi_challenge, string_type) :
+                self.args.multi_challenge = input ('MultiChallenge code: ')
             while 'MultiChallenge' in self.purl :
                 d = self.parse_pw_response ()
                 d ['pin'] = ''
@@ -544,10 +548,6 @@ def main () :
                 args.password = pw
         if not args.password :
             args.password = getpass ('Password: ')
-
-    # Check if MultiChallenge code needs to be prompted
-    if args.multi_challenge == True :
-        args.multi_challenge = input ('MultiChallenge code: ')
 
     # Proceed with login emulation on portal
     rq = HTML_Requester (args)
